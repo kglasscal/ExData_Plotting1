@@ -8,53 +8,38 @@
 library(dplyr)
 library(stringr)
 
-powerConsumption <- file("household_power_consumption.txt", "r")
-dataPoints <- c()
+powerConsumption  <- file("household_power_consumption.txt", "r")
+dateTimePoints    <- c()
+dayPoints         <- c()
+
 done <- FALSE
 
+#before <- as.Date("2007-02-01", format='%Y-%m-%d')
 before <- as.Date("01/02/2007", format='%d/%m/%Y')
 after  <- as.Date('02/02/2007', format='%d/%m/%Y')
 
 line <- readLines(powerConsumption, 1)
 while (!done) {
   line <- readLines(powerConsumption, 1)
-  datetime <- str_split_fixed(line, ";", 3)
-  day <- as.Date(datetime[,1], format='%d/%m/%Y')
-  dt = paste(datetime[,1], datetime[,2], sep = " ")
+  timeStr <- str_split_fixed(line, ";", 3)
+  
+  dtString  <- paste(timeStr[,1], timeStr[,2], sep = " ")
+  dateStr   <- strptime(dtString, format="%d/%m/%Y %H:%M:%S")
+  dateObj   <- as.Date(timeStr[,1], format='%d/%m/%Y')
 
-  time <- strptime(dt, format="%d/%m/%Y %H:%M:%S")
-
-  if (day == before || day == after) {
-    print(day)
-    print(time)
-  } else if (day > after){
+  if (dateObj == before || dateObj == after) {
+    dateTimePoints    <- append(dateTimePoints, dateObj)
+    dayPoints         <- append(dayPoints, format(dateObj, "%a"))
+  } else if (dateObj > after){
     done <- TRUE
   }
 }
+
 close(powerConsumption)
+sourceData = data.frame(Date = dateTimePoints)
+sourceData$Day <- dayPoints
 
-
-#  day <- strtoi(time[[1]][1])
-#  month <- strtoi(time[[1]][2])
-#  year <- strtoi(time[[1]][3])
-  
-#  if (year == 2007) {
-#    if (month == 2) {
-#      if ((day == 1) || (day == 2)) {
-#        print(date[,1])
-#        print(line) 
-#        print(time)
-#        print(day)
-#        print(month)
-#        print(year)
-#      } else if (day > 2) {
-#        done <- TRUE
-#      }
-#    } else if (month > 2) {
-#      done <- TRUE
-#    }
-#  } else if (year == 2007) {
-#    done <- TRUE
-#  }
-#}
+print(head(sourceData))
+print(tail(sourceData))
+#print(sourceData)
 
