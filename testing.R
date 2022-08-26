@@ -8,38 +8,111 @@
 library(dplyr)
 library(stringr)
 
-powerConsumption  <- file("household_power_consumption.txt", "r")
-dateTimePoints    <- c()
-dayPoints         <- c()
+library(chron)
 
-done <- FALSE
+dayInSec <- function (timeToken, dateObj) {
+#  print(timeToken)
+#  print(dateObj)
+  clockObj    <- chron(times = timeToken[,2], format=c('h:m:s'))
+  hour        <- hours(clockObj)
+  minute      <- minutes(clockObj)
+  second      <- seconds(clockObj)
 
-#before <- as.Date("2007-02-01", format='%Y-%m-%d')
-before <- as.Date("01/02/2007", format='%d/%m/%Y')
-after  <- as.Date('02/02/2007', format='%d/%m/%Y')
-
-line <- readLines(powerConsumption, 1)
-while (!done) {
-  line <- readLines(powerConsumption, 1)
-  timeStr <- str_split_fixed(line, ";", 3)
+  dayFrac     <- (3600*hour + 60 * minute + second)/86400
+  intDay      <- strtoi(dateObj)
   
-  dtString  <- paste(timeStr[,1], timeStr[,2], sep = " ")
-  dateStr   <- strptime(dtString, format="%d/%m/%Y %H:%M:%S")
-  dateObj   <- as.Date(timeStr[,1], format='%d/%m/%Y')
+  dayFrac     <- intDay - 1 + dayFrac
+  print(sprintf("int day from dateObj %d", dayFrac))
+  print(sprintf("day %f", dayFrac))
+#  print(hour)
+#  print(minute)
+#  print(second)
 
-  if (dateObj == before || dateObj == after) {
-    dateTimePoints    <- append(dateTimePoints, dateObj)
-    dayPoints         <- append(dayPoints, format(dateObj, "%a"))
-  } else if (dateObj > after){
-    done <- TRUE
-  }
+  return (dayFrac)
 }
 
-close(powerConsumption)
-sourceData = data.frame(Date = dateTimePoints)
-sourceData$Day <- dayPoints
 
-print(head(sourceData))
-print(tail(sourceData))
+
+getFormattedFileData <- function () {
+  powerConsumption  <- file("household_power_consumption.txt", "r")
+  data.frame(Date = datePoints)
+  datePoints        <- c()
+  dayInSecsPoints   <- c()
+  dayPoints         <- c()
+
+  done <- FALSE
+  print(head(powerConsumption))
+  #before <- as.Date("2007-02-01", format='%Y-%m-%d')
+  before <- as.Date("01/02/2007", format='%d/%m/%Y')
+  after  <- as.Date('02/02/2007', format='%d/%m/%Y')
+  
+  line <- readLines(powerConsumption, 1)
+  
+  while (!done) {
+    line <- readLines(powerConsumption, 1)
+    lineTokens <- str_split_fixed(line, ";", 3)
+    
+    dtString  <- paste(lineTokens[,1], lineTokens[,2], sep = " ")
+    dateStr   <- strptime(dtString, format="%d/%m/%Y %H:%M:%S")
+    dateObj   <- as.Date(lineTokens[,1], format='%d/%m/%Y')
+    
+    if (dateObj == before || dateObj == after) {
+      datePoints    <- append(datePoints, dateStr)
+      dayPoints     <- append(dayPoints, format(dateObj, "%a"))
+      frac          <- dayInSec(lineTokens, dateObj)
+      
+      print(frac)
+      dayInSecsPoints    <- append(dayInSecsPoints, strtoi(dateObj) - 1 + frac)
+      
+    } else if (dateObj > after){
+      done <- TRUE
+    }
+  }
+  
+  close(powerConsumption)
+  sourceData = data.frame(Date = datePoints)
+  sourceData$Day <- dayPoints
+  sourceData$DayInSecs <- dayInSecsPoints
+  print(head(sourceData))
+  print(tail(sourceData))
+  #print(sourceData)
+}
+
+
+
+#while (!done) {
+#  line        <- readLines(powerConsumption, 1)
+#  lineTokens  <- str_split(line, ";")
+#  dateObj     <- as.Date(timeStr[[1]][1], format='%d/%m/%Y')
+#  lineTokens  <- str_split_fixed(line, ";", 3)
+#  dateObj     <- as.Date(lineTokens[,1], format='%d/%m/%Y')
+
+#  dateObjStr <- format(before, format = "%d/%m/%Y")
+#  testStr <- sprintf("before = %s, dateObj = %s", beforeStr, dateObjStr)
+#  print(testStr)
+
+#  if (dateObj == before && dateObj == after) {
+#    dayObj          <- format(dateObj, format = "%d")
+
+#    clockObj    <- chron(times = lineTokens[[1]][2], format=c('h:m:s'))
+#    hour        <- hours(clockObj)
+#    minute      <- minutes(clockObj)
+#    second      <- seconds(clockObj)
+#    dayFrac     <- (3600*hour + 60 * minute + second)/86400
+
+#    datePoints  <- append(datePoints, dateObj)
+#    dayPoints   <- append(dayPoints, strtoi(dayObj) - 1 + dayFrac)
+
+#  } else if (dateObj > after){
+#    done <- TRUE
+#  }
+#}
+#print(head(sourceData))
+#print(tail(sourceData))
 #print(sourceData)
 
+#close(powerConsumption)
+#sourceData = data.frame(Date = datePoints)
+#sourceData$Day <- dayPoints
+
+getFormattedFileData()
