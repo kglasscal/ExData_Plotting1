@@ -1,36 +1,38 @@
-# Date;Time;Global_active_power;Global_reactive_power;Voltage;
-# Global_intensity;Sub_metering_1;Sub_metering_2;Sub_metering_3
-#
-# 5/4/2007;11:41:00;1.390;0.160;240.580;5.800;0.000;0.000;18.000
-
-# Read only this time period 2007-02-01 and 2007-02-02
-# grepl("[0-9]{2}-[0-9]{2}-[0-9]{2}", mystring)
 library(dplyr)
 library(stringr)
-
 library(chron)
 
-# dayInSec <- function (timeToken, dateObj) {
-# #  print(timeToken)
-# #  print(dateObj)
-#   clockObj    <- chron(times = timeToken[,2], format=c('h:m:s'))
-#   hour        <- hours(clockObj)
-#   minute      <- minutes(clockObj)
-#   second      <- seconds(clockObj)
+# ##############################################################################
+# Author: Kevin Glass
+# Assignment: Exploratory Data Analysis, Project 1
+#
+# This project consists of two component: getting and formatting the data and 
+# generating a graphic. 
 # 
-#   dayFrac     <- (3600*hour + 60 * minute + second)/86400
-#   intDay      <- strtoi(dateObj)
-#   
-#   dayFrac     <- intDay - 1 + dayFrac
-#   print(sprintf("int day from dateObj %d", dayFrac))
-#   print(sprintf("day %f", dayFrac))
-# #  print(hour)
-# #  print(minute)
-# #  print(second)
-# 
-#   return (dayFrac)
-# }
+# Getting and formatting the data requires a call to getFormattedFileData(). This
+# function will:
+# 1) Initialize several variables to control the read and store loop.
+# 2) Open the source file for reading.
+# 3) Initialize an empty data frame "powerConsumptionData."
+# 4) Loop through the data until the finish value "after" is reached.
+# 4a) Read one line from the data file on each iteration of the loop.
+# 4b) Tokenize the line and add each token to "the next row" of the data.frame.
+# 4c) When the last specified data is reached, terminate the loop.
+# 5) Close the open file.
+# 6) Transform the data.frame values to appropriate data types.
+# 7) Add a day column with the fraction of each day. 
+# ##############################################################################
 
+
+
+# ******************************************************************************
+# The "transformTime" function changes the representation of a date as %d/%m/%Y
+# %H:%M:%Y to the day plus the fraction of the day completed. Each day is 
+# relative to the start of the first date in the target data set. 
+# 
+# For example, in the current problem the start date is 01/02/2007, this is 
+# represented by day = 0
+# ******************************************************************************
 transformTime <- function (df) {
   day <- strtoi(format(df$Date, format = "%d"))
 
@@ -44,6 +46,9 @@ transformTime <- function (df) {
   return  (transformedT)
 }
 
+# ******************************************************************************
+# The "transformDF" converts each column in the data frame to a specified type.
+# ******************************************************************************
 transformDF <- function (df) {
   df$Date  <- as.Date(df$Date, format = "%d/%m/%Y")
   df$Time  <- df$Time
