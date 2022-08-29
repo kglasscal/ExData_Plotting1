@@ -118,7 +118,39 @@ getFormattedFileData <- function () {
 
 makePlot1 <- function () {
   powerConsumptionData = getFormattedFileData()
-  hist(powerConsumptionData$GAP)  
+  par(mgp=c(0.7,0.3,0), mar=c(1,2,2,3))
+
+  png(file="plot1.png",
+      width=480, height=480)
+  hist(
+    powerConsumptionData$GAP, 
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+    xlim=c(0,8),
+    ylim=c(0,1200),
+    col="red"
+    ) 
+  title(main="Global Active Power", line=1.0, cex.lab=0.5)
+  title(xlab="Global Active Power (kilowatts)", line=2, cex.lab=1.0)
+  title(ylab="Frequency", line=2.5, cex.lab=1.0)
+
+  axis(
+    1, 
+    at = seq(0, 6, 2.0), 
+    labels = seq(0, 6, 2.0), 
+    cex.axis = 1,
+    tck = -0.02
+  )
+  axis(
+    2, 
+    at = seq(0, 1200, 200.0), 
+    cex.axis = 1,
+    tck = -0.02
+  )
+  dev.off()
 }
 
 makePlot1()

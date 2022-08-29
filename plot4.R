@@ -113,22 +113,181 @@ getFormattedFileData <- function () {
   
 }
 
+# ****************************************************************************
+# ****************************************************************************
+# ****************************************************************************
+#                                 Plotting
+# ****************************************************************************
+# ****************************************************************************
+# ****************************************************************************
 makePlot4 <- function () {
   powerConsumptionData = getFormattedFileData()
+  
+  png(file="plot4.png",
+      width=480, height=480)
   par(mfrow=c(2,2))
-  hist(powerConsumptionData$GAP)  
+  par(mgp=c(0.7,0.3,0), mar=c(3.5,3,3,3))
+  
+  # ****************************************************************************
+  # Plot upper left
+  # ****************************************************************************
+  plot  (
+    powerConsumptionData$day,
+    powerConsumptionData$GAP,
+    type = "l",
+    lty = 1,
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+    xlim=c(0,2),
+    ylim=c(0,7.6),
+    lwd = 0.5,
+    col="black"
+    # ,
+    # cex.lab = 0.5,
+    # cex.axis = 0.5,
+    # cex.main = 0.7
+  )
+  title(ylab="Global Active Power (kilowatts)", line=1.3, cex.lab=1)
 
-  plot  (powerConsumptionData$day, powerConsumptionData$Volts, type = "l", lty = 1)
+  axis(
+    1,
+    at = seq(0, 2, 1.0),
+    labels = c("Thu", "Fri", "Sat"),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  axis(
+    2,
+    at = seq(0, 6, 2.0),
+    cex.axis = 1,
+    tck = -0.03
+  )
   
-  plot  (powerConsumptionData$day, powerConsumptionData$SM1, type = "l", lty = 1)
-  lines(powerConsumptionData$day, powerConsumptionData$SM2, col = "blue")
-  lines(powerConsumptionData$day, powerConsumptionData$SM3, col = "green")
-  
-  legend("topleft", legend=c("SM1", "SM2", "SM3"),
-         col=c("black", "blue", "green"), lty = 1:2, cex=0.8)
 
-  plot  (powerConsumptionData$day, powerConsumptionData$GRP, type = "l", lty = 1)
+  # ****************************************************************************
+  # Plot upper right
+  # ****************************************************************************
+  plot  (
+    powerConsumptionData$day, 
+    powerConsumptionData$Volts, 
+    type = "l",
+    lty = 1,
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+    xlim=c(0,2),
+    ylim=c(233,247),
+    lwd = 0.5,
+    col="black"
+    # ,
+    # cex.lab = 0.5,
+    # cex.axis = 0.5,
+    # cex.main = 0.7
+  )
+  title(ylab="Voltage", line=1.3, cex.lab=1)
+  title(xlab="datetime", line=1.3, cex.lab=1)
   
+  axis(
+    1,
+    at = seq(0, 2, 1.0),
+    labels = c("Thu", "Fri", "Sat"),
+    cex.axis = 1.2,
+    tck = -0.03
+  )
+  axis(
+    2,
+    at = seq(234, 246, 4.0),
+    cex.axis = 1,
+    tck = -0.03
+  )
+
+  # ****************************************************************************
+  # Plot lower left
+  # ****************************************************************************
+    plot  (
+    powerConsumptionData$day, 
+    powerConsumptionData$SM1, 
+    type = "l",
+    lty = 1,
+    xlim=c(0,2),
+    ylim=c(0,38),
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+    lwd = 0.5
+  )
+  lines(powerConsumptionData$day, powerConsumptionData$SM2, lwd = 0.5, col = "red")
+  lines(powerConsumptionData$day, powerConsumptionData$SM3, lwd = 0.5, col = "blue")
+  title(ylab="Energy sub-metering", line=1.3, cex.lab=1)
+
+  axis(
+    1,
+    at = seq(0, 2, 1.0),
+    labels = c("Thu", "Fri", "Sat"),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  axis(
+    2,
+    at = seq(0, 30, 10.0),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  
+  legend(
+    "topright",
+    legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
+    col=c("black", "red", "blue"),
+    lty = 1,
+    cex=0.25
+  )
+  
+  # ****************************************************************************
+  # Plot lower right
+  # ****************************************************************************
+  plot  (
+    powerConsumptionData$day, 
+    powerConsumptionData$GRP, 
+    type = "l",
+    lty = 1,
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+    xlim=c(0,2),
+    ylim=c(0,0.5),
+    lwd = 0.5,
+    col="black"
+    # ,
+    # cex.lab = 0.5,
+    # cex.axis = 0.5,
+    # cex.main = 0.7
+  )
+  title(ylab="Global_reactive_power", line=1.3, cex.lab=1)
+  title(xlab="datetime", line=1.3, cex.lab=1)
+  
+  axis(
+    1,
+    at = seq(0, 2, 1),
+    labels = c("Thu", "Fri", "Sat"),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  axis(
+    2,
+    at = seq(0, 0.5, 0.1),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  dev.off()
 }
 
 makePlot4()

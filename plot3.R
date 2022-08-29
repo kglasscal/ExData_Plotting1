@@ -114,13 +114,95 @@ getFormattedFileData <- function () {
 }
 
 makePlot3 <- function () {
-  powerConsumptionData = getFormattedFileData()
-  plot  (powerConsumptionData$day, powerConsumptionData$SM1, type = "l", lty = 1)
-  lines(powerConsumptionData$day, powerConsumptionData$SM2, col = "blue")
-  lines(powerConsumptionData$day, powerConsumptionData$SM3, col = "green")
+  # par(mgp=c(0.7,0.3,0), mar=c(2,3,2,3))
+  # png(file="plot2.png",
+  #     width=480, height=480)
+  # plot  (
+  #   powerConsumptionData$day, 
+  #   powerConsumptionData$GAP, 
+  #   type = "l", 
+  #   lty = 1,
+  #   main="",
+  #   xlab="",
+  #   ylab="",
+  #   # ylab="Global Active Power (kilowatts)",
+  #   xaxt='n',
+  #   yaxt='n',
+  #   xlim=c(0,2),
+  #   ylim=c(0,7.6),
+  #   lwd = 1.0,
+  #   col="black",
+  #   cex.lab = 0.5, 
+  #   cex.axis = 0.5, 
+  #   cex.main = 0.7
+  # )
+  # title(ylab="Global Active Power (kilowatts)", line=1.2, cex.lab=0.5)
+  # 
+  # axis(
+  #   1, 
+  #   at = seq(0, 2, 1.0), 
+  #   labels = c("Thu", "Fri", "Sat"),
+  #   cex.axis = 0.5,
+  #   tck = -0.03
+  # )
+  # axis(
+  #   2, 
+  #   at = seq(0, 6, 2.0), 
+  #   cex.axis = 0.5,
+  #   tck = -0.03
+  # )
   
-  legend("topleft", legend=c("SM1", "SM2", "SM3"),
-         col=c("black", "blue", "green"), lty = 1:2, cex=0.8)
+  
+  powerConsumptionData = getFormattedFileData()
+  
+  par(mgp=c(0.7,0.3,0), mar=c(2,3,2,3))
+  png(file="plot3.png",
+      width=480, height=480)
+  
+  plot  (
+    powerConsumptionData$day, 
+    powerConsumptionData$SM1, 
+    type = "l", 
+    lty = 1,
+    xlim=c(0,2),
+    ylim=c(0,38),
+    main="",
+    xlab="",
+    ylab="",
+    xaxt='n',
+    yaxt='n',
+  )
+
+  lines(
+    powerConsumptionData$day, 
+    powerConsumptionData$SM2, 
+    col = "red")
+  lines(powerConsumptionData$day, powerConsumptionData$SM3, col = "blue")
+  title(ylab="Energy sub-metering", line=2, cex.lab=1)
+  
+  axis(
+    1, 
+    at = seq(0, 2, 1.0), 
+    labels = c("Thu", "Fri", "Sat"),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  axis(
+    2,
+    at = seq(0, 30, 10.0),
+    cex.axis = 1,
+    tck = -0.03
+  )
+  
+  legend(
+    "topright", 
+    legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
+    col=c("black", "red", "blue"), 
+    lty = 1, 
+    cex=1
+    )
+  
+  dev.off()
 }
 
 makePlot3()
